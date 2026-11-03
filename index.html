@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>學舌 Polly｜語言筆記本</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%2238%2024%20124%20124%22%3E%3Cellipse%20cx%3D%22100%22%20cy%3D%22114%22%20rx%3D%2258%22%20ry%3D%2262%22%20fill%3D%22%237FAE9C%22/%3E%3Cpath%20d%3D%22M96%2056%20Q86%2038%2094%2030%20Q98%2044%20100%2052%20Q102%2038%20112%2032%20Q116%2046%20105%2058%20Z%22%20fill%3D%22%233E6A5D%22/%3E%3Ccircle%20cx%3D%2278%22%20cy%3D%2290%22%20r%3D%227%22%20fill%3D%22%2322302B%22/%3E%3Ccircle%20cx%3D%22122%22%20cy%3D%2290%22%20r%3D%227%22%20fill%3D%22%2322302B%22/%3E%3Cpath%20d%3D%22M89%2096%20Q100%2089%20111%2096%20Q112%20108%20100%20120%20Q88%20108%2089%2096%20Z%22%20fill%3D%22%23E0A55B%22/%3E%3Cpath%20d%3D%22M50%20124%20Q100%20146%20150%20124%20L150%20136%20Q100%20160%2050%20136%20Z%22%20fill%3D%22%238A6577%22/%3E%3C/svg%3E">
+<meta name="theme-color" content="#E9EFEA">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=LXGW+WenKai+TC:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+:root{
+  --paper:#E9EFEA; --sheet:#F8FAF7; --ink:#22302B; --ink-2:#5E6D67; --line:#D3DDD6;
+  --celadon:#6E9A8B; --deep:#3E6A5D; --cel-soft:#DCE8E2; --plum:#8A6577; --plum-soft:#EFE6EA;
+  /* CreamFont 若已在你的其他專案用 @font-face 載入，這裡會優先使用 */
+  --zh:'CreamFont','LXGW WenKai TC','PingFang TC','Noto Sans TC',sans-serif;
+  --ko:'Gowun Batang','Nanum Myeongjo','Apple SD Gothic Neo',serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--zh);-webkit-tap-highlight-color:transparent}
+body{padding-top:env(safe-area-inset-top,0px)}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--deep);outline-offset:2px}
+.ko{font-family:var(--ko)}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px calc(100px + env(safe-area-inset-bottom,0px))}
+
+.top{display:flex;align-items:baseline;gap:10px;margin:4px 0 18px}
+.brand{font-size:1.9rem;font-weight:700;letter-spacing:.08em}
+.brand-sub{color:var(--ink-2);font-size:.95rem}
+.mode{margin-left:auto;font-size:.78rem;color:var(--plum);background:var(--plum-soft);padding:3px 9px;border-radius:999px}
+
+.quick{display:flex;flex-direction:column;gap:8px;background:var(--sheet);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:14px}
+.quick-row{display:flex;gap:8px}
+.quick input{flex:1;min-width:0;border:none;background:transparent;padding:6px 4px;outline:none}
+.quick .main{font-size:1.05rem;border-bottom:1px dashed var(--line)}
+.quick small{color:var(--ink-2);font-size:.78rem}
+
+.search{display:flex;align-items:center;gap:8px;background:var(--sheet);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:10px}
+.search input{flex:1;border:none;background:transparent;outline:none}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:8px;scrollbar-width:none}
+.chip{flex:none;border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 11px;font-size:.85rem;color:var(--ink-2)}
+.chip.on{background:var(--deep);border-color:var(--deep);color:#fff}
+
+.list{background:var(--sheet);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.row{display:block;width:100%;text-align:left;border:none;background:transparent;padding:14px 16px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:none}
+.row:hover{background:#F1F5F1}
+.row-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.row-ko{font-family:var(--ko);font-size:1.4rem;font-weight:700}
+.hanja{color:var(--plum);font-size:.95rem}
+.row-zh{margin-top:2px}
+.meta{display:flex;gap:10px;align-items:center;margin-top:6px;font-size:.8rem;color:var(--ink-2);flex-wrap:wrap}
+.meta i{vertical-align:-2px}
+.lv{padding:1px 8px;border-radius:6px;font-size:.75rem}
+.lv.formal{background:var(--deep);color:#fff}
+.lv.polite{background:var(--cel-soft);color:var(--deep)}
+.lv.casual{background:var(--plum-soft);color:var(--plum)}
+
+.empty{text-align:center;color:var(--ink-2);padding:40px 16px;line-height:1.8}
+
+.fab{position:fixed;right:max(18px,calc(50% - 302px));bottom:calc(84px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:18px;border:none;background:var(--deep);color:#fff;font-size:1.6rem;box-shadow:0 6px 18px rgba(62,106,93,.35)}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(248,250,247,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+.nav-in{max-width:640px;margin:0 auto;display:flex}
+.nav button{flex:1;border:none;background:none;padding:10px 0 8px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem;color:var(--ink-2);position:relative}
+.nav button i{font-size:1.4rem}
+.nav button.on{color:var(--deep);font-weight:700}
+.badge{position:absolute;top:4px;left:calc(50% + 8px);background:var(--plum);color:#fff;font-size:.68rem;border-radius:999px;padding:0 6px}
+
+.overlay{position:fixed;inset:0;background:rgba(34,48,43,.38);display:flex;align-items:flex-end;justify-content:center;z-index:10}
+.sheet{background:var(--sheet);width:100%;max-width:640px;max-height:92vh;border-radius:22px 22px 0 0;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (min-width:700px){.overlay{align-items:center}.sheet{border-radius:22px;max-height:86vh}}
+.sheet-head{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.sheet-head h2{margin:0;font-size:1.1rem;flex:1}
+.sheet-body{overflow-y:auto;padding:16px}
+.sheet-foot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+.icon-btn{border:none;background:none;font-size:1.3rem;padding:6px;border-radius:10px;color:var(--ink-2);display:inline-flex}
+.icon-btn:hover{background:var(--cel-soft)}
+.btn{border:1px solid var(--line);background:transparent;border-radius:12px;padding:9px 16px;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--deep);border-color:var(--deep);color:#fff;flex:1;justify-content:center}
+.btn.danger{color:#9B4A44}
+
+.seg{display:flex;background:var(--paper);border-radius:12px;padding:3px;margin-bottom:14px}
+.seg button{flex:1;border:none;background:none;padding:7px;border-radius:10px;color:var(--ink-2)}
+.seg button.on{background:var(--sheet);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(34,48,43,.12)}
+.field{display:block;margin-bottom:13px}
+.field > span{display:block;font-size:.85rem;color:var(--ink-2);margin-bottom:5px}
+.field small{margin-left:6px;opacity:.8}
+.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;outline:none}
+.field textarea{min-height:76px;resize:vertical;line-height:1.6}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--celadon)}
+.field input.big{font-family:var(--ko);font-size:1.3rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.res-edit{display:flex;flex-direction:column;gap:6px;padding:10px;border:1px dashed var(--line);border-radius:12px;margin-bottom:8px}
+.res-edit div{display:flex;gap:6px}
+
+.hero{padding:6px 0 14px}
+.hero-ko{font-family:var(--ko);font-size:2.6rem;font-weight:700;line-height:1.25;word-break:keep-all}
+.hero-tools{display:flex;gap:6px;margin-top:8px}
+.jamo{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.jamo-syl{border:1px solid var(--line);border-radius:10px;padding:6px 10px;text-align:center;background:#fff}
+.jamo-syl b{font-family:var(--ko);font-size:1.3rem;display:block}
+.jamo-syl span{font-family:var(--ko);color:var(--celadon);letter-spacing:.2em}
+.sec{border-top:1px solid var(--line);padding:12px 0}
+.sec h3{margin:0 0 6px;font-size:.85rem;color:var(--ink-2);font-weight:400}
+.sec p{margin:0;line-height:1.7;white-space:pre-wrap}
+.ex{display:flex;gap:8px;align-items:flex-start;padding:5px 0}
+.ex .ko{font-size:1.08rem}
+.ex div > div:last-child{color:var(--ink-2);font-size:.9rem}
+.res{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:#fff;border:1px solid var(--line);margin-bottom:6px;text-decoration:none;color:inherit}
+.res small{display:block;color:var(--ink-2)}
+.res i{color:var(--celadon);font-size:1.2rem}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(150px + env(safe-area-inset-bottom,0px));width:min(90vw,420px);background:var(--ink);color:var(--paper);padding:12px 16px;border-radius:14px;line-height:1.6;z-index:30;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.polly{flex:none;display:block}
+.polly-empty{display:flex;flex-direction:column;align-items:center;gap:6px;padding:28px 16px 12px}
+.bubble{position:relative;background:var(--sheet);border:1.5px solid var(--line);border-radius:18px;padding:10px 18px;line-height:1.7;text-align:center;color:var(--ink)}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-7px;width:12px;height:12px;background:var(--sheet);border-right:1.5px solid var(--line);border-bottom:1.5px solid var(--line);transform:translateX(-50%) rotate(45deg)}
+.bubble small{display:block;color:var(--ink-2);font-size:.85rem}
+.brand-wrap{display:flex;align-items:center;gap:8px}
+.inbox-add{background:var(--sheet);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:14px}
+.inbox-item{padding:12px 16px;border-bottom:1px solid var(--line)}
+.inbox-item:last-child{border-bottom:none}
+.inbox-item a{color:var(--deep);word-break:break-all}
+.inbox-actions{display:flex;gap:6px;margin-top:8px}
+.inbox-actions .btn{padding:5px 12px;font-size:.85rem}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="module">
+import React, { useState, useEffect, useMemo } from 'https://esm.sh/react@18.3.1';
+import { createRoot } from 'https://esm.sh/react-dom@18.3.1/client?deps=react@18.3.1';
+import htm from 'https://esm.sh/htm@3.1.1';
+const html = htm.bind(React.createElement);
+
+/* ── Firebase 設定：填入後自動改用 Firestore，留空則存在本機 ── */
+const FIREBASE_CONFIG = { apiKey: '', authDomain: '', projectId: '', storageBucket: '', messagingSenderId: '', appId: '' };
+const CLOUD = Boolean(FIREBASE_CONFIG.apiKey);
+
+const store = (() => {
+  let fb = null;
+  const listeners = {};
+  const key = c => `shiyu:${c}`;
+  const readLocal = c => { try { return JSON.parse(localStorage.getItem(key(c))) || []; } catch { return []; } };
+  const writeLocal = (c, items) => { localStorage.setItem(key(c), JSON.stringify(items)); (listeners[c] || []).forEach(fn => fn(items)); };
+  return {
+    async init() {
+      if (!CLOUD) return;
+      const [{ initializeApp }, f] = await Promise.all([
+        import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),
+        import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'),
+      ]);
+      fb = { f, db: f.getFirestore(initializeApp(FIREBASE_CONFIG)) };
+    },
+    subscribe(c, cb) {
+      if (fb) {
+        const { f, db } = fb;
+        return f.onSnapshot(f.query(f.collection(db, c), f.orderBy('createdAt', 'desc')),
+          snap => cb(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
+      }
+      (listeners[c] ||= []).push(cb);
+      cb(readLocal(c));
+      return () => { listeners[c] = listeners[c].filter(x => x !== cb); };
+    },
+    async save(c, item) {
+      const now = Date.now();
+      const { id, ...data } = item;
+      if (fb) {
+        const { f, db } = fb;
+        if (id) return f.setDoc(f.doc(db, c, id), { ...data, updatedAt: now }, { merge: true });
+        return f.addDoc(f.collection(db, c), { ...data, createdAt: now, updatedAt: now });
+      }
+      const items = readLocal(c);
+      if (id) writeLocal(c, items.map(x => x.id === id ? { ...x, ...data, updatedAt: now } : x));
+      else writeLocal(c, [{ ...data, id: crypto.randomUUID(), createdAt: now, updatedAt: now }, ...items]);
+    },
+    async remove(c, id) {
+      if (fb) return fb.f.deleteDoc(fb.f.doc(fb.db, c, id));
+      writeLocal(c, readLocal(c).filter(x => x.id !== id));
+    },
+  };
+})();
+
+/* ── 韓文工具 ── */
+const CHO = [...'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'];
+const JUNG = [...'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ'];
+const JONG = ['', ...'ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ'];
+const decompose = text => [...text].map(ch => {
+  const n = ch.charCodeAt(0) - 0xAC00;
+  if (n < 0 || n > 11171) return null;
+  return { ch, parts: [CHO[Math.floor(n / 588)], JUNG[Math.floor((n % 588) / 28)], JONG[n % 28]].filter(Boolean) };
+}).filter(Boolean);
+
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 4200);
+}
+function loadVoices() {
+  return new Promise(res => {
+    const now = speechSynthesis.getVoices();
+    if (now.length) return res(now);
+    const t = setTimeout(() => res(speechSynthesis.getVoices()), 1500);
+    speechSynthesis.addEventListener('voiceschanged', () => { clearTimeout(t); res(speechSynthesis.getVoices()); }, { once: true });
+  });
+}
+let koHintShown = false;
+async function speak(text) {
+  if (!('speechSynthesis' in window)) return toast('這個環境不支援朗讀，請改用 Chrome 開啟');
+  const voices = await loadVoices();
+  if (!voices.length) return toast('這個環境沒有可用的語音。App 內的預覽可能無法朗讀，請改用 Chrome 開啟');
+  const ko = voices.find(v => v.lang.replace('_', '-').toLowerCase().startsWith('ko'));
+  if (!ko && !koHintShown) { koHintShown = true; toast('找不到韓文語音，可到手機設定的「文字轉語音」安裝韓文語音資料'); }
+  speechSynthesis.cancel();
+  setTimeout(() => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ko-KR'; u.rate = 0.9;
+    if (ko) u.voice = ko;
+    u.onerror = e => e.error !== 'interrupted' && e.error !== 'canceled' && toast('朗讀失敗：' + e.error);
+    speechSynthesis.speak(u);
+  }, 60);
+}
+
+const LEVELS = { 格式體: 'formal', 敬語: 'polite', 半語: 'casual' };
+const POS = ['名詞', '動詞', '形容詞', '副詞', '助詞', '連接詞', '感嘆詞', '其他'];
+const KINDS = { drama: '韓劇', song: '歌曲', variety: '綜藝', other: '其他' };
+const KIND_ICON = { drama: 'ph-television-simple', song: 'ph-music-notes', variety: 'ph-microphone-stage', other: 'ph-bookmark-simple' };
+
+const emptyEntry = type => ({
+  type, korean: '', romanization: '', meaning: '', hanja: '', pos: '', level: '',
+  formula: '', conjugations: '', examples: '', notes: '', tags: [],
+  source: { kind: 'drama', title: '', detail: '' }, resources: [],
+});
+const lines = s => (s || '').split('\n').map(l => l.trim()).filter(Boolean);
+const parseExamples = s => lines(s).map(l => { const [ko, ...zh] = l.split(/[|｜]/); return { ko: ko.trim(), zh: zh.join('|').trim() }; });
+const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } };
+const uniq = arr => [...new Set(arr.filter(Boolean))];
+
+/* ── 共用元件 ── */
+function Sheet({ title, onClose, footer, children }) {
+  useEffect(() => {
+    const onKey = e => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+  return html`<div class="overlay" onClick=${e => e.target === e.currentTarget && onClose()}>
+    <div class="sheet" role="dialog" aria-label=${title}>
+      <div class="sheet-head"><h2>${title}</h2>
+        <button class="icon-btn" aria-label="關閉" onClick=${onClose}><i class="ph ph-x"></i></button></div>
+      <div class="sheet-body">${children}</div>
+      ${footer && html`<div class="sheet-foot">${footer}</div>`}
+    </div></div>`;
+}
+const Field = ({ label, hint, children }) =>
+  html`<label class="field"><span>${label}${hint && html`<small>${hint}</small>`}</span>${children}</label>`;
+
+
+/* ── Polly ── */
+function Polly({ mood = 'normal', size = 120, head = false }) {
+  const happy = mood === 'happy';
+  const mouth = mood === 'talk' ? 'M93 110 Q100 132 107 110 Z' : 'M95 112 Q100 122 105 112 Z';
+  return html`<svg class="polly" viewBox=${head ? '38 24 124 124' : '0 0 200 200'} width=${size} height=${size} aria-hidden="true">
+    ${!head && html`<path d="M90 166 L80 196 L98 186 Z M110 166 L120 196 L102 186 Z" fill="#3E6A5D"></path>
+      <path d="M86 176 q-2 9 -9 11 M114 176 q2 9 9 11" fill="none" stroke="#B9813F" stroke-width="4" stroke-linecap="round"></path>`}
+    <ellipse cx="100" cy="114" rx="58" ry="62" fill="#7FAE9C"></ellipse>
+    <ellipse cx="100" cy="136" rx="34" ry="36" fill="#D3E6DC"></ellipse>
+    <path d="M44 108 Q34 146 62 166 Q72 136 60 106 Z M156 108 Q166 146 138 166 Q128 136 140 106 Z" fill="#5E8E7D"></path>
+    <path d="M96 56 Q86 38 94 30 Q98 44 100 52 Q102 38 112 32 Q116 46 105 58 Z" fill="#3E6A5D"></path>
+    ${happy
+      ? html`<path d="M70 93 Q78 83 86 93 M114 93 Q122 83 130 93" fill="none" stroke="#22302B" stroke-width="3.5" stroke-linecap="round"></path>`
+      : html`<circle cx="78" cy="90" r="7" fill="#22302B"></circle><circle cx="122" cy="90" r="7" fill="#22302B"></circle>
+        <circle cx="80.5" cy="87.5" r="2.3" fill="#FFFFFF"></circle><circle cx="124.5" cy="87.5" r="2.3" fill="#FFFFFF"></circle>`}
+    <ellipse cx="66" cy="106" rx="9" ry="5.5" fill="#E8B4A2" opacity="0.85"></ellipse>
+    <ellipse cx="134" cy="106" rx="9" ry="5.5" fill="#E8B4A2" opacity="0.85"></ellipse>
+    <path d=${mouth} fill="#B9813F"></path>
+    <path d="M89 96 Q100 89 111 96 Q112 108 100 120 Q88 108 89 96 Z" fill="#E0A55B"></path>
+    <path d="M50 124 Q100 146 150 124 L150 136 Q100 160 50 136 Z" fill="#8A6577"></path>
+    ${!head && html`<path d="M124 142 L138 170 L122 166 Z M128 142 L118 172 L110 162 Z" fill="#8A6577"></path>`}
+  </svg>`;
+}
+const PollySays = ({ mood = 'normal', children }) =>
+  html`<div class="polly-empty"><div class="bubble">${children}</div><${Polly} mood=${mood} size=${128} /></div>`;
+
+/* ── 新增／編輯 ── */
+function EntryForm({ initial, onSave, onClose, sourceTitles }) {
+  const [d, setD] = useState(() => ({
+    ...emptyEntry(initial.type || 'word'), ...initial,
+    source: { kind: 'drama', title: '', detail: '', ...(initial.source || {}) },
+    resources: initial.resources || [],
+  }));
+  const [tagText, setTagText] = useState((initial.tags || []).join('、'));
+  const set = (k, v) => setD(p => ({ ...p, [k]: v }));
+  const setSrc = (k, v) => setD(p => ({ ...p, source: { ...p.source, [k]: v } }));
+  const setRes = (i, k, v) => setD(p => ({ ...p, resources: p.resources.map((r, j) => j === i ? { ...r, [k]: v } : r) }));
+  const isWord = d.type === 'word';
+
+  const submit = () => {
+    if (!d.korean.trim()) return alert('請先填寫韓文');
+    const tags = uniq(tagText.split(/[,，、\s]+/).map(t => t.trim()));
+    onSave({ ...d, korean: d.korean.trim(), tags, resources: d.resources.filter(r => r.url.trim()) });
+  };
+
+  return html`<${Sheet} title=${initial.id ? '編輯' : (isWord ? '新增單字' : '新增句型')} onClose=${onClose}
+      footer=${html`<button class="btn primary" onClick=${submit}><i class="ph ph-check"></i>儲存</button>`}>
+    <div class="seg">${['word', 'pattern'].map(t => html`<button key=${t} class=${d.type === t ? 'on' : ''} onClick=${() => set('type', t)}>${t === 'word' ? '單字' : '句型'}</button>`)}</div>
+    <${Field} label=${isWord ? '韓文' : '句型'}>
+      <input class="big" value=${d.korean} onInput=${e => set('korean', e.target.value)} placeholder=${isWord ? '설레다' : '-(으)ㄹ 것 같다'} /><//>
+    <${Field} label="中文意思"><input value=${d.meaning} onInput=${e => set('meaning', e.target.value)} placeholder=${isWord ? '心動、悸動' : '好像會…、應該會…'} /><//>
+    ${isWord ? html`
+      <div class="grid2">
+        <${Field} label="漢字" hint="漢字詞才填"><input value=${d.hanja} onInput=${e => set('hanja', e.target.value)} placeholder="圖書館" /><//>
+        <${Field} label="詞性"><select value=${d.pos} onChange=${e => set('pos', e.target.value)}>
+          <option value="">—</option>${POS.map(p => html`<option key=${p}>${p}</option>`)}</select><//>
+      </div>
+      <${Field} label="活用" hint="一行一個"><textarea class="ko" value=${d.conjugations} onInput=${e => set('conjugations', e.target.value)} placeholder=${'설레요\n설렜어요\n설레는'}></textarea><//>
+    ` : html`
+      <${Field} label="接續方式" hint="接在什麼後面、怎麼變化"><textarea value=${d.formula} onInput=${e => set('formula', e.target.value)} placeholder="動詞／形容詞語幹 + (으)ㄹ 것 같다；有收尾音用 을"></textarea><//>
+    `}
+    <div class="grid2">
+      <${Field} label="羅馬拼音" hint="選填"><input value=${d.romanization} onInput=${e => set('romanization', e.target.value)} /><//>
+      <${Field} label="語體"><select value=${d.level} onChange=${e => set('level', e.target.value)}>
+        <option value="">不限</option>${Object.keys(LEVELS).map(l => html`<option key=${l}>${l}</option>`)}</select><//>
+    </div>
+    <${Field} label="例句" hint="一行一句，韓文｜中文"><textarea class="ko" value=${d.examples} onInput=${e => set('examples', e.target.value)} placeholder="너무 설레요｜好心動"></textarea><//>
+
+    <div class="field"><span>出處</span>
+      <div class="grid2">
+        <select value=${d.source.kind} onChange=${e => setSrc('kind', e.target.value)}>
+          ${Object.entries(KINDS).map(([k, v]) => html`<option key=${k} value=${k}>${v}</option>`)}</select>
+        <input list="src-titles" value=${d.source.title} onInput=${e => setSrc('title', e.target.value)} placeholder="劇名／歌名" />
+      </div>
+      <input style=${{"marginTop": "8px"}} value=${d.source.detail} onInput=${e => setSrc('detail', e.target.value)} placeholder="第3集 32:10，或那句歌詞" />
+      <datalist id="src-titles">${sourceTitles.map(t => html`<option key=${t} value=${t} />`)}</datalist>
+    </div>
+
+    <${Field} label="標籤" hint="用、或空格分隔"><input value=${tagText} onInput=${e => setTagText(e.target.value)} placeholder="告白、日常" /><//>
+    <${Field} label="我的筆記"><textarea value=${d.notes} onInput=${e => set('notes', e.target.value)} placeholder="用自己的話寫重點"></textarea><//>
+
+    <div class="field"><span>參考資源</span>
+      ${d.resources.map((r, i) => html`<div class="res-edit" key=${i}>
+        <div><input value=${r.url} onInput=${e => setRes(i, 'url', e.target.value)} placeholder="https://" />
+          <button class="icon-btn" aria-label="移除" onClick=${() => set('resources', d.resources.filter((_, j) => j !== i))}><i class="ph ph-trash"></i></button></div>
+        <input value=${r.note} onInput=${e => setRes(i, 'note', e.target.value)} placeholder="這篇在講什麼" />
+      </div>`)}
+      <button class="btn" onClick=${() => set('resources', [...d.resources, { url: '', note: '' }])}><i class="ph ph-link"></i>加一個連結</button>
+    </div>
+  <//>`;
+}
+
+/* ── 詳細頁 ── */
+function EntryDetail({ entry, onEdit, onDelete, onClose }) {
+  const [showJamo, setShowJamo] = useState(false);
+  const examples = parseExamples(entry.examples);
+  const conj = lines(entry.conjugations);
+  const src = entry.source || {};
+  return html`<${Sheet} title=${entry.type === 'word' ? '單字' : '句型'} onClose=${onClose}
+      footer=${html`<button class="btn danger" onClick=${onDelete}><i class="ph ph-trash"></i>刪除</button>
+        <button class="btn primary" onClick=${onEdit}><i class="ph ph-pencil-simple"></i>編輯</button>`}>
+    <div class="hero">
+      <div class="hero-ko">${entry.korean}</div>
+      ${entry.hanja && html`<div class="hanja" style=${{"fontSize": "1.1rem"}}>${entry.hanja}</div>`}
+      ${entry.romanization && html`<div style=${{"color": "var(--ink-2)"}}>${entry.romanization}</div>`}
+      <div style=${{"fontSize": "1.15rem", "marginTop": "8px"}}>${entry.meaning}</div>
+      <div class="meta">
+        ${entry.level && html`<span class=${'lv ' + LEVELS[entry.level]}>${entry.level}</span>`}
+        ${entry.pos && html`<span>${entry.pos}</span>`}
+        ${(entry.tags || []).map(t => html`<span key=${t}>#${t}</span>`)}
+      </div>
+      <div class="hero-tools">
+        <button class="btn" onClick=${() => speak(entry.korean)}><i class="ph ph-speaker-high"></i>朗讀</button>
+        <button class="btn" onClick=${() => setShowJamo(v => !v)}><i class="ph ph-squares-four"></i>${showJamo ? '收起拆解' : '拆字母'}</button>
+      </div>
+      ${showJamo && html`<div class="jamo">${decompose(entry.korean).map((s, i) => html`
+        <div class="jamo-syl" key=${i}><b>${s.ch}</b><span>${s.parts.join(' ')}</span></div>`)}</div>`}
+    </div>
+
+    ${entry.formula && html`<div class="sec"><h3>接續方式</h3><p>${entry.formula}</p></div>`}
+    ${conj.length > 0 && html`<div class="sec"><h3>活用</h3>${conj.map((c, i) => html`
+      <div class="ex" key=${i}><button class="icon-btn" aria-label="朗讀" onClick=${() => speak(c)}><i class="ph ph-speaker-simple-high"></i></button>
+      <div class="ko" style=${{"paddingTop": "6px"}}>${c}</div></div>`)}</div>`}
+    ${examples.length > 0 && html`<div class="sec"><h3>例句</h3>${examples.map((ex, i) => html`
+      <div class="ex" key=${i}><button class="icon-btn" aria-label="朗讀" onClick=${() => speak(ex.ko)}><i class="ph ph-speaker-simple-high"></i></button>
+      <div style=${{"paddingTop": "5px"}}><div class="ko">${ex.ko}</div>${ex.zh && html`<div>${ex.zh}</div>`}</div></div>`)}</div>`}
+    ${entry.notes && html`<div class="sec"><h3>我的筆記</h3><p>${entry.notes}</p></div>`}
+    ${src.title && html`<div class="sec"><h3>出處</h3>
+      <p><i class=${'ph ' + KIND_ICON[src.kind || 'other']}></i> ${src.title}${src.detail ? `｜${src.detail}` : ''}</p></div>`}
+    ${(entry.resources || []).length > 0 && html`<div class="sec"><h3>參考資源</h3>
+      ${entry.resources.map((r, i) => html`<a class="res" key=${i} href=${r.url} target="_blank" rel="noopener">
+        <i class="ph ph-arrow-square-out"></i><div>${r.note || host(r.url)}<small>${host(r.url)}</small></div></a>`)}</div>`}
+  <//>`;
+}
+
+/* ── 歸檔：選一張卡片 ── */
+function ArchivePicker({ entries, onPick, onClose }) {
+  const [q, setQ] = useState('');
+  const shown = entries.filter(e => !q || `${e.korean} ${e.meaning}`.toLowerCase().includes(q.toLowerCase()));
+  return html`<${Sheet} title="歸檔到哪張卡片？" onClose=${onClose}>
+    <div class="search"><i class="ph ph-magnifying-glass"></i><input autofocus value=${q} onInput=${e => setQ(e.target.value)} placeholder="搜尋單字或句型" /></div>
+    <div class="list">${shown.length ? shown.map(e => html`<button class="row" key=${e.id} onClick=${() => onPick(e)}>
+      <div class="row-head"><span class="row-ko">${e.korean}</span><span style=${{"color": "var(--ink-2)", "fontSize": ".8rem"}}>${e.type === 'word' ? '單字' : '句型'}</span></div>
+      <div class="row-zh">${e.meaning}</div></button>`) : html`<div class="empty">找不到符合的卡片</div>`}</div>
+  <//>`;
+}
+
+/* ── 收件匣 ── */
+function Inbox({ inbox, entries, shared }) {
+  const [url, setUrl] = useState(shared?.url || '');
+  const [note, setNote] = useState(shared?.note || '');
+  const [archiving, setArchiving] = useState(null);
+  const add = async () => {
+    if (!url.trim()) return;
+    await store.save('inbox', { url: url.trim(), note: note.trim() });
+    setUrl(''); setNote('');
+  };
+  const archive = async entry => {
+    const item = archiving;
+    await store.save('entries', { id: entry.id, resources: [...(entry.resources || []), { url: item.url, note: item.note || '' }] });
+    await store.remove('inbox', item.id);
+    setArchiving(null);
+  };
+  return html`<div>
+    <div class="inbox-add">
+      <div class="field"><span>看到好資源先丟進來，之後再歸檔到句型或單字</span>
+        <input value=${url} onInput=${e => setUrl(e.target.value)} placeholder="貼上連結" /></div>
+      <div class="field" style=${{"marginBottom": "10px"}}><input value=${note} onInput=${e => setNote(e.target.value)} placeholder="備註，例如：-아서/어서 vs -니까 比較" /></div>
+      <button class="btn primary" style=${{"width": "100%"}} onClick=${add}><i class="ph ph-tray-arrow-down"></i>加入收件匣</button>
+    </div>
+    ${inbox.length ? html`<div class="list">${inbox.map(it => html`<div class="inbox-item" key=${it.id}>
+      ${it.note && html`<div style=${{"marginBottom": "4px"}}>${it.note}</div>`}
+      <a href=${it.url} target="_blank" rel="noopener">${host(it.url)}</a>
+      <div class="inbox-actions">
+        <button class="btn" onClick=${() => setArchiving(it)} disabled=${!entries.length}><i class="ph ph-folder-simple-plus"></i>歸檔</button>
+        <button class="btn danger" onClick=${() => confirm('刪除這個連結？') && store.remove('inbox', it.id)}><i class="ph ph-trash"></i></button>
+      </div></div>`)}</div>`
+      : html`<${PollySays} mood="happy">收件匣清空了！<small>看到好的文法講解，先貼到這裡</small><//>`}
+    ${archiving && html`<${ArchivePicker} entries=${entries} onPick=${archive} onClose=${() => setArchiving(null)} />`}
+  </div>`;
+}
+
+/* ── 快速記錄：설레다 / 心動 / 第3集 ── */
+function QuickAdd({ entries, onAdd }) {
+  const [text, setText] = useState('');
+  const [title, setTitle] = useState(() => { try { return localStorage.getItem('shiyu:lastSource') || ''; } catch { return ''; } });
+  const submit = () => {
+    const [ko, zh = '', detail = ''] = text.split(/\s*[/／]\s*/);
+    if (!ko?.trim()) return;
+    const t = title.trim();
+    const kind = entries.find(e => e.source?.title === t)?.source.kind || 'drama';
+    onAdd({ korean: ko.trim(), meaning: zh.trim(), source: { kind, title: t, detail: detail.trim() } });
+    setText('');
+    try { localStorage.setItem('shiyu:lastSource', t); } catch {}
+  };
+  return html`<div class="quick">
+    <div class="quick-row">
+      <input class="main ko" value=${text} onInput=${e => setText(e.target.value)} onKeyDown=${e => e.key === 'Enter' && !e.isComposing && submit()}
+        placeholder="설레다 / 心動 / 第3集" aria-label="快速記錄" />
+      <button class="icon-btn" aria-label="記下" onClick=${submit}><i class="ph ph-plus-circle"></i></button>
+    </div>
+    <div class="quick-row" style=${{"alignItems": "center"}}>
+      <small><i class="ph ph-television-simple"></i> 正在看</small>
+      <input list="quick-src" value=${title} onInput=${e => setTitle(e.target.value)} placeholder="劇名或歌名" />
+      <datalist id="quick-src">${uniq(entries.map(e => e.source?.title)).map(t => html`<option key=${t} value=${t} />`)}</datalist>
+    </div>
+  </div>`;
+}
+
+/* ── 主畫面 ── */
+function readShared() {
+  const p = new URLSearchParams(location.search);
+  const text = p.get('text') || '';
+  const url = p.get('url') || (text.match(/https?:\/\/\S+/) || [''])[0];
+  if (!url) return null;
+  history.replaceState(null, '', location.pathname);
+  return { url, note: p.get('title') || text.replace(url, '').trim() };
+}
+
+function App() {
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState('');
+  const [entries, setEntries] = useState([]);
+  const [inbox, setInbox] = useState([]);
+  const [shared] = useState(readShared);
+  const [tab, setTab] = useState(shared ? 'inbox' : 'word');
+  const [q, setQ] = useState('');
+  const [tag, setTag] = useState('');
+  const [src, setSrc] = useState('');
+  const [viewId, setViewId] = useState(null);
+  const [editing, setEditing] = useState(null);
+
+  useEffect(() => {
+    let unsubs = [];
+    store.init().then(() => {
+      unsubs = [store.subscribe('entries', setEntries), store.subscribe('inbox', setInbox)];
+      setReady(true);
+    }).catch(err => setError('連線失敗：' + err.message));
+    return () => unsubs.forEach(u => u && u());
+  }, []);
+  useEffect(() => { setTag(''); setSrc(''); }, [tab]);
+
+  const ofTab = entries.filter(e => e.type === tab);
+  const sources = uniq(ofTab.map(e => e.source?.title));
+  const tags = uniq(ofTab.flatMap(e => e.tags || []));
+  const shown = useMemo(() => ofTab
+    .filter(e => !tag || (e.tags || []).includes(tag))
+    .filter(e => !src || e.source?.title === src)
+    .filter(e => !q || [e.korean, e.meaning, e.hanja, e.romanization, e.notes, e.formula, e.examples, e.conjugations]
+      .join(' ').toLowerCase().includes(q.toLowerCase())), [entries, tab, tag, src, q]);
+  const viewing = entries.find(e => e.id === viewId);
+
+  const saveEntry = async d => { await store.save('entries', d); setEditing(null); };
+  const quickAdd = async d => { await store.save('entries', { ...emptyEntry(tab), ...d }); toast(`Polly 記住了：${d.korean}`); };
+  const del = async e => { if (!confirm(`刪除「${e.korean}」？`)) return; setViewId(null); await store.remove('entries', e.id); };
+
+  if (error) return html`<div class="wrap"><div class="empty">${error}<br/>請檢查 Firebase 設定</div></div>`;
+  if (!ready) return html`<div class="wrap"><div class="empty">載入中…</div></div>`;
+
+  return html`<div class="wrap">
+    <header class="top">
+      <span class="brand-wrap"><${Polly} head size=${40} /><span class="brand">學舌</span></span><span class="brand-sub">Polly · 韓語</span>
+      ${!CLOUD && html`<span class="mode">本機模式</span>`}
+    </header>
+
+    ${tab === 'inbox' ? html`<${Inbox} inbox=${inbox} entries=${entries} shared=${shared} />` : html`
+      <${QuickAdd} entries=${entries} onAdd=${quickAdd} />
+      <div class="search"><i class="ph ph-magnifying-glass"></i>
+        <input value=${q} onInput=${e => setQ(e.target.value)} placeholder=${tab === 'word' ? '搜尋單字、意思、漢字' : '搜尋句型、例句'} /></div>
+      ${sources.length > 0 && html`<div class="chips">${sources.map(s => html`
+        <button key=${s} class=${'chip' + (src === s ? ' on' : '')} onClick=${() => setSrc(src === s ? '' : s)}>${s}</button>`)}</div>`}
+      ${tags.length > 0 && html`<div class="chips">${tags.map(t => html`
+        <button key=${t} class=${'chip' + (tag === t ? ' on' : '')} onClick=${() => setTag(tag === t ? '' : t)}>#${t}</button>`)}</div>`}
+      ${shown.length ? html`<div class="list">${shown.map(e => html`
+        <button class="row" key=${e.id} onClick=${() => setViewId(e.id)}>
+          <div class="row-head"><span class="row-ko">${e.korean}</span>${e.hanja && html`<span class="hanja">${e.hanja}</span>`}</div>
+          <div class="row-zh">${e.meaning}</div>
+          <div class="meta">
+            ${e.level && html`<span class=${'lv ' + LEVELS[e.level]}>${e.level}</span>`}
+            ${e.source?.title && html`<span><i class=${'ph ' + KIND_ICON[e.source.kind || 'other']}></i> ${e.source.title}${e.source.detail ? ' ' + e.source.detail : ''}</span>`}
+            ${(e.resources || []).length > 0 && html`<span><i class="ph ph-link"></i> ${e.resources.length}</span>`}
+          </div>
+        </button>`)}</div>`
+        : ofTab.length ? html`<${PollySays}>找不到耶，換個關鍵字試試？<//>`
+          : tab === 'word'
+            ? html`<${PollySays}>還沒有單字耶，教我說點什麼吧？<small>在上面輸入「설레다 / 心動 / 第3集」</small><//>`
+            : html`<${PollySays}>還沒有句型耶<small>點右下角，新增第一個句型</small><//>`}
+      <button class="fab" aria-label="新增" onClick=${() => setEditing({ type: tab })}><i class="ph ph-plus"></i></button>
+    `}
+
+    <nav class="nav"><div class="nav-in">
+      ${[['word', 'ph-text-aa', '單字'], ['pattern', 'ph-puzzle-piece', '句型'], ['inbox', 'ph-tray', '收件匣']].map(([k, icon, label]) => html`
+        <button key=${k} class=${tab === k ? 'on' : ''} onClick=${() => setTab(k)}>
+          <i class=${'ph ' + icon}></i>${label}
+          ${k === 'inbox' && inbox.length > 0 && html`<span class="badge">${inbox.length}</span>`}
+        </button>`)}
+    </div></nav>
+
+    ${viewing && html`<${EntryDetail} entry=${viewing} onClose=${() => setViewId(null)}
+      onEdit=${() => { setEditing(viewing); setViewId(null); }} onDelete=${() => del(viewing)} />`}
+    ${editing && html`<${EntryForm} initial=${editing} onClose=${() => setEditing(null)} onSave=${saveEntry}
+      sourceTitles=${uniq(entries.map(e => e.source?.title))} />`}
+  </div>`;
+}
+
+createRoot(document.getElementById('root')).render(html`<${App} />`);
+</script>
+</body>
+</html>
