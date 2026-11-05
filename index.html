@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>學舌 Polly｜語言筆記本</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%2238%2024%20124%20124%22%3E%3Cellipse%20cx%3D%22100%22%20cy%3D%22114%22%20rx%3D%2258%22%20ry%3D%2262%22%20fill%3D%22%237FAE9C%22/%3E%3Cpath%20d%3D%22M96%2056%20Q86%2038%2094%2030%20Q98%2044%20100%2052%20Q102%2038%20112%2032%20Q116%2046%20105%2058%20Z%22%20fill%3D%22%233E6A5D%22/%3E%3Ccircle%20cx%3D%2278%22%20cy%3D%2290%22%20r%3D%227%22%20fill%3D%22%2322302B%22/%3E%3Ccircle%20cx%3D%22122%22%20cy%3D%2290%22%20r%3D%227%22%20fill%3D%22%2322302B%22/%3E%3Cpath%20d%3D%22M89%2096%20Q100%2089%20111%2096%20Q112%20108%20100%20120%20Q88%20108%2089%2096%20Z%22%20fill%3D%22%23E0A55B%22/%3E%3Cpath%20d%3D%22M50%20124%20Q100%20146%20150%20124%20L150%20136%20Q100%20160%2050%20136%20Z%22%20fill%3D%22%238A6577%22/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#E9EFEA">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -137,8 +139,16 @@ import htm from 'https://esm.sh/htm@3.1.1';
 const html = htm.bind(React.createElement);
 
 /* ── Firebase 設定：填入後自動改用 Firestore，留空則存在本機 ── */
-const FIREBASE_CONFIG = { apiKey: '', authDomain: '', projectId: '', storageBucket: '', messagingSenderId: '', appId: '' };
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyCR_OabOMLCzRhXGLBoRbnms20jiK5wtPE',
+  authDomain: 'pick-light.firebaseapp.com',
+  projectId: 'pick-light',
+  storageBucket: 'pick-light.firebasestorage.app',
+  messagingSenderId: '358588547214',
+  appId: '1:358588547214:web:5ada449d71af50ad3109df',
+};
 const CLOUD = Boolean(FIREBASE_CONFIG.apiKey);
+const COL_PREFIX = 'polly_'; // Firestore 集合名稱前綴，避免和同專案的其他 app 撞名
 
 const store = (() => {
   let fb = null;
@@ -158,7 +168,7 @@ const store = (() => {
     subscribe(c, cb) {
       if (fb) {
         const { f, db } = fb;
-        return f.onSnapshot(f.query(f.collection(db, c), f.orderBy('createdAt', 'desc')),
+        return f.onSnapshot(f.query(f.collection(db, COL_PREFIX + c), f.orderBy('createdAt', 'desc')),
           snap => cb(snap.docs.map(d => ({ id: d.id, ...d.data() }))));
       }
       (listeners[c] ||= []).push(cb);
@@ -170,15 +180,15 @@ const store = (() => {
       const { id, ...data } = item;
       if (fb) {
         const { f, db } = fb;
-        if (id) return f.setDoc(f.doc(db, c, id), { ...data, updatedAt: now }, { merge: true });
-        return f.addDoc(f.collection(db, c), { ...data, createdAt: now, updatedAt: now });
+        if (id) return f.setDoc(f.doc(db, COL_PREFIX + c, id), { ...data, updatedAt: now }, { merge: true });
+        return f.addDoc(f.collection(db, COL_PREFIX + c), { ...data, createdAt: now, updatedAt: now });
       }
       const items = readLocal(c);
       if (id) writeLocal(c, items.map(x => x.id === id ? { ...x, ...data, updatedAt: now } : x));
       else writeLocal(c, [{ ...data, id: crypto.randomUUID(), createdAt: now, updatedAt: now }, ...items]);
     },
     async remove(c, id) {
-      if (fb) return fb.f.deleteDoc(fb.f.doc(fb.db, c, id));
+      if (fb) return fb.f.deleteDoc(fb.f.doc(fb.db, COL_PREFIX + c, id));
       writeLocal(c, readLocal(c).filter(x => x.id !== id));
     },
   };
@@ -471,11 +481,18 @@ function QuickAdd({ entries, onAdd }) {
 /* ── 主畫面 ── */
 function readShared() {
   const p = new URLSearchParams(location.search);
-  const text = p.get('text') || '';
-  const url = p.get('url') || (text.match(/https?:\/\/\S+/) || [''])[0];
-  if (!url) return null;
+  const title = (p.get('title') || '').trim();
+  let text = (p.get('text') || '').trim();
+  let url = (p.get('url') || '').trim();
+  if (!text && !url && !title) return null;
   history.replaceState(null, '', location.pathname);
-  return { url, note: p.get('title') || text.replace(url, '').trim() };
+  const found = text.match(/https?:\/\/\S+/);
+  if (!url && found) url = found[0];
+  if (url) text = text.replace(url, '').trim();
+  text = text.replace(/^["“「『]+|["”」』]+$/g, '').trim();
+  // 框選一小段韓文分享過來 → 直接開新增單字；其他 → 收件匣
+  if (text && /[\uAC00-\uD7A3]/.test(text) && text.length <= 80) return { kind: 'word', text, url, title };
+  return { kind: 'inbox', url, note: text || title };
 }
 
 function App() {
@@ -484,12 +501,14 @@ function App() {
   const [entries, setEntries] = useState([]);
   const [inbox, setInbox] = useState([]);
   const [shared] = useState(readShared);
-  const [tab, setTab] = useState(shared ? 'inbox' : 'word');
+  const [tab, setTab] = useState(shared?.kind === 'inbox' ? 'inbox' : 'word');
   const [q, setQ] = useState('');
   const [tag, setTag] = useState('');
   const [src, setSrc] = useState('');
   const [viewId, setViewId] = useState(null);
-  const [editing, setEditing] = useState(null);
+  const [editing, setEditing] = useState(() => shared?.kind === 'word'
+    ? { type: 'word', korean: shared.text, resources: shared.url ? [{ url: shared.url, note: shared.title }] : [] }
+    : null);
 
   useEffect(() => {
     let unsubs = [];
@@ -524,7 +543,7 @@ function App() {
       ${!CLOUD && html`<span class="mode">本機模式</span>`}
     </header>
 
-    ${tab === 'inbox' ? html`<${Inbox} inbox=${inbox} entries=${entries} shared=${shared} />` : html`
+    ${tab === 'inbox' ? html`<${Inbox} inbox=${inbox} entries=${entries} shared=${shared?.kind === 'inbox' ? shared : null} />` : html`
       <${QuickAdd} entries=${entries} onAdd=${quickAdd} />
       <div class="search"><i class="ph ph-magnifying-glass"></i>
         <input value=${q} onInput=${e => setQ(e.target.value)} placeholder=${tab === 'word' ? '搜尋單字、意思、漢字' : '搜尋句型、例句'} /></div>
@@ -565,6 +584,7 @@ function App() {
 }
 
 createRoot(document.getElementById('root')).render(html`<${App} />`);
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
 </html>
