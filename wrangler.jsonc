@@ -1,0 +1,8 @@
+{
+  // Cloudflare Workers 設定：把這個 repo 的檔案當成靜態網站發佈
+  "name": "xueshe",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./"
+  }
+}
